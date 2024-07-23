@@ -6,21 +6,25 @@ import time
 
 load_dotenv()
 token = os.getenv('HUGGINGFACE_TOKEN')
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu") # for Apple silicon, use "mps" instead of "cuda"
 print(f"Device: {device}")
 if device.type == "cuda":
     print(f"Device name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
 
 start_time = time.time()
 
+# Define the model name
+# model_name = "meta-llama/Meta-Llama-3-8B"
+model_name = "SweatyCrayfish/llama-3-8b-quantized"
+
 # Initialize tokenizer and model
-tokenizer = AutoTokenizer.from_pretrained("meta-llama/Meta-Llama-3-8B", token=token)
+tokenizer = AutoTokenizer.from_pretrained(model_name, token=token)
 
 # Add a pad token if it doesn't exist
 if tokenizer.pad_token is None:
     tokenizer.add_special_tokens({'pad_token': tokenizer.eos_token})
 
-model = AutoModelForCausalLM.from_pretrained("meta-llama/Meta-Llama-3-8B", token=token).to(device)
+model = AutoModelForCausalLM.from_pretrained(model_name, token=token).to(device)
 
 print(f"Initialization took {time.time() - start_time} seconds")
 
